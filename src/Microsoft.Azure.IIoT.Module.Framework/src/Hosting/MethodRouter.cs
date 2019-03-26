@@ -93,7 +93,7 @@ namespace Microsoft.Azure.IIoT.Module.Framework.Hosting {
                 .Select(v => "_v" + v.Value)
                 .ToList();
             if (versions.Count == 0) {
-                versions = new List<string> { string.Empty };
+                versions.Add(string.Empty);
             }
             foreach (var methodInfo in target.GetType().GetMethods()) {
                 if (!typeof(Task).IsAssignableFrom(methodInfo.ReturnType)) {
