@@ -46,12 +46,12 @@ namespace Microsoft.Azure.IIoT.Module.Framework.Hosting {
             string deviceId) {
             if (!string.IsNullOrEmpty(_workloaduri)) {
                 var uri = _workloaduri + "/modules?api-version=" + _apiVersion;
-                _logger.Verbose("Calling GET on {workloadUri} uri.", _workloaduri);
+                _logger.Information("Calling GET on {uri} uri...", uri);
                 var request = _client.NewRequest(uri);
                 var result = await Retry.WithExponentialBackoff(_logger, async () => {
                     var response = await _client.GetAsync(request);
                     var payload = response.GetContentAsString();
-                    _logger.Verbose("Received {statusCode} and payload: {payload}.", 
+                    _logger.Information("... received {statusCode} and payload: {payload}.", 
                         response.StatusCode, payload);
                     response.Validate();
                     return JsonConvertEx.DeserializeObject<EdgeletModules>(payload);

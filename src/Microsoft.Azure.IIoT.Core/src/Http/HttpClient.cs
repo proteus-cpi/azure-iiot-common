@@ -12,6 +12,7 @@ namespace Microsoft.Azure.IIoT.Http.Default {
     using System.Threading.Tasks;
     using System.Net;
     using System.Text;
+    using System.Linq;
 
     /// <summary>
     /// Http client wrapping http client factory created http clients and
@@ -141,13 +142,21 @@ namespace Microsoft.Azure.IIoT.Http.Default {
             /// <param name="resourceId"></param>
             public HttpRequest(Uri uri, string resourceId) {
                 Options = new HttpRequestOptions();
-                Request = new HttpRequestMessage {
-                    RequestUri = uri
-                };
+                Request = new HttpRequestMessage();
+                if (uri.Scheme.EqualsIgnoreCase("unix")) {
+                    // Need a way to work around request uri validation - add uds path to header.
+                    Request.Headers.TryAddWithoutValidation(HttpHeader.UdsPath, uri.LocalPath);
+                    Request.RequestUri = new UriBuilder(uri) {
+                        Scheme = "http",
+                        Host = uri.Segments.Last()
+                    }.Uri;
+                }
+                else {
+                    Request.RequestUri = uri;
+                }
                 ResourceId = resourceId;
                 if (ResourceId != null) {
-                    Request.Headers.TryAddWithoutValidation(
-                        HttpHeader.ResourceId, ResourceId);
+                    Request.Headers.TryAddWithoutValidation(HttpHeader.ResourceId, ResourceId);
                 }
             }
 
