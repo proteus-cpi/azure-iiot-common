@@ -36,30 +36,29 @@ namespace Microsoft.Azure.IIoT.Http.Default {
         /// <summary>
         /// Send over unix domain sockets
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="udsPath"></param>
         /// <param name="request"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        private async Task<HttpResponseMessage> SendOverUnixDomainSocketAsync(
-            string path, HttpRequestMessage request, CancellationToken ct) {
+        private async Task<HttpResponseMessage> SendOverUnixDomainSocketAsync(string udsPath, 
+            HttpRequestMessage request, CancellationToken ct) {
             if (request == null) {
                 throw new ArgumentNullException(nameof(request));
             }
-            if (string.IsNullOrEmpty(path)) {
-                throw new ArgumentNullException(nameof(path));
+            if (string.IsNullOrEmpty(udsPath)) {
+                throw new ArgumentNullException(nameof(udsPath));
             }
             using (var socket = new Socket(AddressFamily.Unix, SocketType.Stream,
                 ProtocolType.Unspecified)) {
-                await socket.ConnectAsync(new UdsEndPoint(path)).ConfigureAwait(false);
+                await socket.ConnectAsync(new UdsEndPoint(udsPath)).ConfigureAwait(false);
                 using (var stream = new HttpLineReader(new NetworkStream(socket, true))) {
                     var requestBytes = GetRequestBuffer(request);
-                    await stream.WriteAsync(requestBytes, 0, requestBytes.Length,
-                        ct).ConfigureAwait(false);
+                    await stream.WriteAsync(requestBytes, 0, requestBytes.Length, ct)
+                        .ConfigureAwait(false);
                     if (request.Content != null) {
                         await request.Content.CopyToAsync(stream).ConfigureAwait(false);
                     }
-                    return await ReadResponseAsync(stream, ct)
-                        .ConfigureAwait(false);
+                    return await ReadResponseAsync(stream, ct).ConfigureAwait(false);
                 }
             }
         }
@@ -78,7 +77,8 @@ namespace Microsoft.Azure.IIoT.Http.Default {
             }
 
             if (string.IsNullOrEmpty(request.Headers.Host)) {
-                request.Headers.Host = $"{request.RequestUri.DnsSafeHost}:{request.RequestUri.Port}";
+                request.Headers.Host =
+                    $"{request.RequestUri.DnsSafeHost}:{request.RequestUri.Port}";
             }
             request.Headers.ConnectionClose = true;
 
@@ -86,9 +86,7 @@ namespace Microsoft.Azure.IIoT.Http.Default {
             // request-line  = method SP request-target SP HTTP-version CRLF
             builder.Append(request.Method);
             builder.Append(kSpace);
-            builder.Append(request.RequestUri.IsAbsoluteUri ?
-                request.RequestUri.PathAndQuery :
-                Uri.EscapeUriString(request.RequestUri.ToString()));
+            builder.Append(request.RequestUri.PathAndQuery);
             builder.Append(kSpace);
             builder.Append($"{kProtocol}{kProtoVersionSep}");
             builder.Append(new Version(1, 1).ToString(2));

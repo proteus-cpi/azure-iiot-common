@@ -27,18 +27,32 @@ namespace Microsoft.Azure.IIoT.Module.Framework.Hosting {
         /// </summary>
         /// <param name="client"></param>
         /// <param name="logger"></param>
-        public EdgeletClient(IHttpClient client, ILogger logger) {
+        public EdgeletClient(IHttpClient client, ILogger logger) : this (client,
+            Environment.GetEnvironmentVariable("IOTEDGE_WORKLOADURI")?.TrimEnd('/'),
+            Environment.GetEnvironmentVariable("IOTEDGE_MODULEGENERATIONID"),
+            Environment.GetEnvironmentVariable("IOTEDGE_MODULEID"),
+            Environment.GetEnvironmentVariable("IOTEDGE_APIVERSION"), 
+            logger) {
+        }
+
+        /// <summary>
+        /// Create client
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="workloaduri"></param>
+        /// <param name="genId"></param>
+        /// <param name="moduleId"></param>
+        /// <param name="apiVersion"></param>
+        /// <param name="logger"></param>
+        public EdgeletClient(IHttpClient client, string workloaduri,
+            string genId, string moduleId, string apiVersion,
+            ILogger logger) {
             _client = client ?? throw new ArgumentNullException(nameof(client));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            _workloaduri = Environment.GetEnvironmentVariable(
-                "IOTEDGE_WORKLOADURI")?.TrimEnd('/');
-            _moduleGenerationId = Environment.GetEnvironmentVariable(
-                "IOTEDGE_MODULEGENERATIONID");
-            _moduleId = Environment.GetEnvironmentVariable(
-                "IOTEDGE_MODULEID");
-            _apiVersion = Environment.GetEnvironmentVariable(
-                "IOTEDGE_APIVERSION") ?? "2019-01-30";
+            _workloaduri = workloaduri; 
+            _moduleGenerationId = genId; 
+            _moduleId = moduleId; 
+            _apiVersion = apiVersion ?? "2019-01-30"; 
         }
 
         /// <inheritdoc/>
@@ -46,13 +60,19 @@ namespace Microsoft.Azure.IIoT.Module.Framework.Hosting {
             string deviceId) {
             if (!string.IsNullOrEmpty(_workloaduri)) {
                 var uri = _workloaduri + "/modules?api-version=" + _apiVersion;
-                _logger.Information("Calling GET on {uri} uri...", uri);
+                _logger.Debug("Calling GET on {uri} uri...", uri);
                 var request = _client.NewRequest(uri);
                 var result = await Retry.WithExponentialBackoff(_logger, async () => {
                     var response = await _client.GetAsync(request);
                     var payload = response.GetContentAsString();
-                    _logger.Information("... received {statusCode} and payload: {payload}.", 
-                        response.StatusCode, payload);
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK) {
+                        _logger.Debug("... returned {statusCode}.", response.StatusCode);
+                        _logger.Verbose("payload: {payload}.", payload);
+                    }
+                    else {
+                        _logger.Warning("... resulted in {statusCode} with error: {payload}.",
+                            response.StatusCode, payload);
+                    }
                     response.Validate();
                     return JsonConvertEx.DeserializeObject<EdgeletModules>(payload);
                 });

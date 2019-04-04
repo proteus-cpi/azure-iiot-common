@@ -143,17 +143,12 @@ namespace Microsoft.Azure.IIoT.Http.Default {
             public HttpRequest(Uri uri, string resourceId) {
                 Options = new HttpRequestOptions();
                 Request = new HttpRequestMessage();
-                if (uri.Scheme.EqualsIgnoreCase("unix")) {
+                if (!uri.Scheme.EqualsIgnoreCase("http") && !uri.Scheme.EqualsIgnoreCase("https")) {
                     // Need a way to work around request uri validation - add uds path to header.
-                    Request.Headers.TryAddWithoutValidation(HttpHeader.UdsPath, uri.LocalPath);
-                    Request.RequestUri = new UriBuilder(uri) {
-                        Scheme = "http",
-                        Host = uri.Segments.Last()
-                    }.Uri;
+                    Request.Headers.TryAddWithoutValidation(HttpHeader.UdsPath,
+                        uri.ParseUdsPath(out uri));
                 }
-                else {
-                    Request.RequestUri = uri;
-                }
+                Request.RequestUri = uri;
                 ResourceId = resourceId;
                 if (ResourceId != null) {
                     Request.Headers.TryAddWithoutValidation(HttpHeader.ResourceId, ResourceId);
@@ -183,6 +178,7 @@ namespace Microsoft.Azure.IIoT.Http.Default {
             /// <inheritdoc/>
             public string ResourceId { get; }
         }
+
 
         /// <summary>
         /// Response object
