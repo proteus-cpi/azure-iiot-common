@@ -46,12 +46,7 @@ namespace Microsoft.Azure.IIoT.Services.Auth.Clients {
             }
         }
 
-        /// <summary>
-        /// Obtain token from user
-        /// </summary>
-        /// <param name="resource"></param>
-        /// <param name="scopes"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public async Task<TokenResultModel> GetTokenForAsync(string resource,
             IEnumerable<string> scopes) {
             if (string.IsNullOrEmpty(_config.AppId) ||
@@ -65,8 +60,10 @@ namespace Microsoft.Azure.IIoT.Services.Auth.Clients {
                 throw new AuthenticationException("Missing claims principal.");
             }
 
-            var name = user.FindFirstValue(ClaimTypes.Upn) ??
-                user.FindFirstValue(ClaimTypes.Email);
+            var name = user.FindFirstValue(ClaimTypes.Upn);
+            if (string.IsNullOrEmpty(name)) {
+                name = user.FindFirstValue(ClaimTypes.Email);
+            }
 
             const string kAccessTokenKey = "access_token";
             var token = await _ctx.HttpContext.GetTokenAsync(kAccessTokenKey);
@@ -108,6 +105,9 @@ namespace Microsoft.Azure.IIoT.Services.Auth.Clients {
             string authorityUrl, string tenantId, TokenCache cache) {
             if (string.IsNullOrEmpty(authorityUrl)) {
                 authorityUrl = kDefaultAuthorityUrl;
+            }
+            else if (!authorityUrl.EndsWith("/")) {
+                authorityUrl += "/";
             }
             var uri = new UriBuilder(authorityUrl) {
                 Path = tenantId ?? "common"
