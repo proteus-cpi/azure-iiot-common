@@ -99,9 +99,9 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
         }
 
         private DocumentClient _client;
-        private string _databaseId;
-        private string _id;
-        private bool _partitioned;
+        private readonly string _databaseId;
+        private readonly string _id;
+        private readonly bool _partitioned;
         private ILogger _logger;
     }
 }

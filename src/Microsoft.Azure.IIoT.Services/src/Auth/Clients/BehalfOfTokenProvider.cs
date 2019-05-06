@@ -106,7 +106,7 @@ namespace Microsoft.Azure.IIoT.Services.Auth.Clients {
             if (string.IsNullOrEmpty(authorityUrl)) {
                 authorityUrl = kDefaultAuthorityUrl;
             }
-            else if (!authorityUrl.EndsWith("/")) {
+            else if (!authorityUrl.EndsWith("/", StringComparison.Ordinal)) {
                 authorityUrl += "/";
             }
             var uri = new UriBuilder(authorityUrl) {

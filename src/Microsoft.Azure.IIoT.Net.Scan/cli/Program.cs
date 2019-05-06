@@ -104,8 +104,10 @@ Operations (Mutually exclusive):
                         TestNetworkScanner().Wait();
                         break;
                     case Op.TestPortScanner:
-                        while(true) TestPortScanner(host).Wait();
-                        //break;
+                        while(true) {
+                            TestPortScanner(host).Wait();
+                        }
+                    //break;
                     default:
                         throw new ArgumentException("Unknown.");
                 }

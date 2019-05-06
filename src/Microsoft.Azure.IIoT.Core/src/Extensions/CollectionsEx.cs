@@ -32,7 +32,7 @@ namespace System.Collections.Generic {
             var hashCode = -932366343;
             if (seq != null) {
                 foreach (var item in seq) {
-                    hashCode = hashCode * -1521134295 + hash(item);
+                    hashCode = (hashCode * -1521134295) + hash(item);
                 }
             }
             return hashCode;
@@ -47,7 +47,7 @@ namespace System.Collections.Generic {
             var hashCode = -932366343;
             if (seq != null) {
                 foreach (var item in seq) {
-                    hashCode = hashCode * -1521134295 + item.GetHashSafe();
+                    hashCode = (hashCode * -1521134295) + item.GetHashSafe();
                 }
             }
             return hashCode;

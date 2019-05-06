@@ -299,7 +299,7 @@ namespace System.Collections.Concurrent {
                     // Keep going until the tree is a heap
                     while (true) {
                         // Get the positions of the node's children
-                        var leftChildPos = 2 * current + 1;
+                        var leftChildPos = (2 * current) + 1;
                         var rightChildPos = leftChildPos + 1;
 
                         // Should we swap with the left child?
