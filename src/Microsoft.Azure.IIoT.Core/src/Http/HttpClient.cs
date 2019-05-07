@@ -12,6 +12,7 @@ namespace Microsoft.Azure.IIoT.Http.Default {
     using System.Threading.Tasks;
     using System.Net;
     using System.Text;
+    using System.Linq;
 
     /// <summary>
     /// Http client wrapping http client factory created http clients and
