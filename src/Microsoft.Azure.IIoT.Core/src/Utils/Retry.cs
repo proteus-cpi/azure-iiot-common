@@ -26,7 +26,7 @@ namespace Microsoft.Azure.IIoT.Utils {
         public static Func<int, Exception, int> Exponential => (k, ex) =>
             GetExponentialDelay(k, ExponentialBackoffIncrement, ExponentialMaxRetryCount);
 
-        private static Random r = new Random();
+        private static readonly Random r = new Random();
         /// <summary>Max retry count for exponential policy</summary>
         public static int ExponentialMaxRetryCount = 13;
         /// <summary>Exponential backoff increment</summary>
