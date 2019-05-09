@@ -4,19 +4,19 @@
 // ------------------------------------------------------------
 
 namespace Microsoft.Azure.IIoT.Services.Auth.Clients {
-    using Microsoft.Azure.IIoT.Auth.Clients;
     using Microsoft.Azure.IIoT.Auth;
+    using Microsoft.Azure.IIoT.Auth.Clients;
     using Microsoft.Azure.IIoT.Auth.Models;
-    using Serilog;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Http;
     using Microsoft.IdentityModel.Clients.ActiveDirectory;
+    using Serilog;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Authentication;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Authenticate on behalf of current logged in claims principal to another
@@ -63,6 +63,9 @@ namespace Microsoft.Azure.IIoT.Services.Auth.Clients {
             var name = user.FindFirstValue(ClaimTypes.Upn);
             if (string.IsNullOrEmpty(name)) {
                 name = user.FindFirstValue(ClaimTypes.Email);
+            }
+            if (string.IsNullOrEmpty(name)) {
+                name = user.Identity?.Name;
             }
 
             const string kAccessTokenKey = "access_token";
