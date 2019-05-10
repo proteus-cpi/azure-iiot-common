@@ -15,6 +15,11 @@ namespace Microsoft.Azure.IIoT.Storage {
     public interface IResultFeed<T> : IDisposable {
 
         /// <summary>
+        /// Get continuation token to continue read later
+        /// </summary>
+        string ContinuationToken { get; }
+
+        /// <summary>
         /// Returns whether there is more data in the feed
         /// </summary>
         /// <returns></returns>

@@ -310,6 +310,10 @@ namespace Microsoft.Azure.IIoT.Storage.Default {
             /// </summary>
             private class MemoryFeed<T> : IResultFeed<T> {
 
+                /// <inheritdoc/>
+                public string ContinuationToken => 
+                    throw new NotImplementedException(); // TODO
+
                 /// <summary>
                 /// Create feed
                 /// </summary>

@@ -20,12 +20,12 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
     using System.Net;
     using System.Threading;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Gremlin.Net.CosmosDb;
     using Gremlin.Net.CosmosDb.Structure;
     using Gremlin.Net.Process.Traversal;
     using CosmosContainer = Documents.DocumentCollection;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Wraps a cosmos db container
@@ -345,9 +345,12 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
             /// </summary>
             /// <typeparam name="T"></typeparam>
             private class GremlinQueryResult<T> : IResultFeed<T> {
+
                 /// <inheritdoc/>
-                public GremlinQueryResult(
-                    Task<GraphResult<T>> query) {
+                public string ContinuationToken => throw new NotSupportedException();
+
+                /// <inheritdoc/>
+                public GremlinQueryResult(Task<GraphResult<T>> query) {
                     _query = query;
                 }
                 /// <inheritdoc/>

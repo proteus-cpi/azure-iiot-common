@@ -18,6 +18,9 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
     /// </summary>
     sealed class DocumentFeed<T> : IResultFeed<T> {
 
+        /// <inheritdoc/>
+        public string ContinuationToken { get; private set; }
+
         /// <summary>
         /// Create feed
         /// </summary>
@@ -31,7 +34,9 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
             return await Retry.WithExponentialBackoff(_logger, ct, async () => {
                 if (_query.HasMoreResults) {
                     try {
-                        return await _query.ExecuteNextAsync<T>(ct);
+                        var result = await _query.ExecuteNextAsync<T>(ct);
+                        ContinuationToken = result.ResponseContinuation;
+                        return result;
                     }
                     catch (Exception ex) {
                         DocumentCollection.FilterException(ex);
