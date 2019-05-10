@@ -40,9 +40,9 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
                 databaseId = "default";
             }
             var cs = ConnectionString.Parse(_config.DbConnectionString);
-            var settings = _jsonConfig?.Serializer ?? JsonConvert.DefaultSettings();
-            var client = new DocumentClient(new Uri(cs.Endpoint),
-                cs.SharedAccessKey, settings);
+            var settings = _jsonConfig?.Serializer ?? JsonConvert.DefaultSettings?.Invoke();
+            var client = new DocumentClient(new Uri(cs.Endpoint), cs.SharedAccessKey, 
+                settings);
             await client.CreateDatabaseIfNotExistsAsync(new Database {
                 Id = databaseId
             });
