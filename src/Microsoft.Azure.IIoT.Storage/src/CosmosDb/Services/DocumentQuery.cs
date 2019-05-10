@@ -60,8 +60,8 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
                     PartitionKey = pk,
                     
                     EnableCrossPartitionQuery = pk == null
-                }).Select(d => (IDocumentInfo<T>)new DocumentInfo<T>(d));
-            return new DocumentFeed<IDocumentInfo<T>>(query.AsDocumentQuery(), _logger);
+                });
+            return new DocumentFeed<IDocumentInfo<T>, Document>(query.AsDocumentQuery(), _logger);
         }
 
         /// <inheritdoc/>
@@ -80,8 +80,8 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
                     PartitionKey = pk,
                     RequestContinuation = continuationToken,
                     EnableCrossPartitionQuery = pk == null
-                }).Select(d => (IDocumentInfo<T>)new DocumentInfo<T>(d));
-            return new DocumentFeed<IDocumentInfo<T>>(query.AsDocumentQuery(), _logger);
+                });
+            return new DocumentFeed<IDocumentInfo<T>, Document>(query.AsDocumentQuery(), _logger);
         }
 
         /// <inheritdoc/>

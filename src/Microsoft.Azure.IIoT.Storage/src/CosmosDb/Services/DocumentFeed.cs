@@ -16,7 +16,7 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
     /// <summary>
     /// Wraps a document query to return statements
     /// </summary>
-    sealed class DocumentFeed<T> : IResultFeed<T> {
+    sealed class DocumentFeed<T, T2> : IResultFeed<T> {
 
         /// <inheritdoc/>
         public string ContinuationToken { get; private set; }
@@ -24,7 +24,7 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
         /// <summary>
         /// Create feed
         /// </summary>
-        internal DocumentFeed(IDocumentQuery<T> query, ILogger logger) {
+        internal DocumentFeed(IDocumentQuery<T2> query, ILogger logger) {
             _query = query ?? throw new ArgumentNullException(nameof(query));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -54,7 +54,7 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
         /// </summary>
         public void Dispose() => _query.Dispose();
 
-        private readonly IDocumentQuery<T> _query;
+        private readonly IDocumentQuery<T2> _query;
         private readonly ILogger _logger;
     }
 }
