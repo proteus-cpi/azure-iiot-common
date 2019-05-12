@@ -12,11 +12,12 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
     using System.Threading;
     using System.Threading.Tasks;
     using System;
+    using Microsoft.Azure.Documents;
 
     /// <summary>
-    /// Wraps a document query to return statements
+    /// Wraps a document query to return document infos
     /// </summary>
-    sealed class DocumentFeed<T, T2> : IResultFeed<T> {
+    sealed class DocumentInfoFeed<T> : IResultFeed<IDocumentInfo<T>> {
 
         /// <inheritdoc/>
         public string ContinuationToken { get; private set; }
@@ -24,25 +25,25 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
         /// <summary>
         /// Create feed
         /// </summary>
-        internal DocumentFeed(IDocumentQuery<T2> query, ILogger logger) {
+        internal DocumentInfoFeed(IDocumentQuery<Document> query, ILogger logger) {
             _query = query ?? throw new ArgumentNullException(nameof(query));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <inheritdoc/>
-        public async Task<IEnumerable<T>> ReadAsync(CancellationToken ct) {
+        public async Task<IEnumerable<IDocumentInfo<T>>> ReadAsync(CancellationToken ct) {
             return await Retry.WithExponentialBackoff(_logger, ct, async () => {
                 if (_query.HasMoreResults) {
                     try {
-                        var result = await _query.ExecuteNextAsync<T>(ct);
+                        var result = await _query.ExecuteNextAsync<Document>(ct);
                         ContinuationToken = result.ResponseContinuation;
-                        return result;
+                        return result.Select(r => (IDocumentInfo<T>)new DocumentInfo<T>(r));
                     }
                     catch (Exception ex) {
                         DocumentCollection.FilterException(ex);
                     }
                 }
-                return Enumerable.Empty<T>();
+                return Enumerable.Empty<IDocumentInfo<T>>();
             });
         }
 
@@ -54,7 +55,7 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
         /// </summary>
         public void Dispose() => _query.Dispose();
 
-        private readonly IDocumentQuery<T2> _query;
+        private readonly IDocumentQuery<Document> _query;
         private readonly ILogger _logger;
     }
 }

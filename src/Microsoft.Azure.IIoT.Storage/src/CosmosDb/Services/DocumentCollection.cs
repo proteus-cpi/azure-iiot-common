@@ -70,7 +70,7 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
                        PartitionKey = pk,
                        EnableCrossPartitionQuery = pk == null
                    }).Select(d => (IDocumentInfo<T>)new DocumentInfo<T>(d)));
-            return new DocumentFeed<R, R>(result.AsDocumentQuery(), _logger);
+            return new DocumentResultFeed<R>(result.AsDocumentQuery(), _logger);
         }
 
         /// <inheritdoc/>
