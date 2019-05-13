@@ -32,6 +32,9 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
     /// </summary>
     sealed class DocumentCollection : IItemContainer, IGraph, IDocuments {
 
+        /// <inheritdoc/>
+        public string Name => Container.Id;
+
         /// <summary>
         /// Wrapped document collection instance
         /// </summary>

@@ -361,4 +361,5 @@ namespace System.Collections.Concurrent {
         private readonly object _syncLock = new object();
         private readonly MinBinaryHeap _minHeap = new MinBinaryHeap();
     }
+
 }

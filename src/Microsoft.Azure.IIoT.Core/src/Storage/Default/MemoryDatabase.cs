@@ -60,7 +60,7 @@ namespace Microsoft.Azure.IIoT.Storage.Default {
             /// <inheritdoc/>
             public Task<IItemContainer> OpenContainerAsync(string id, bool partitioned) {
                 return Task.FromResult<IItemContainer>(_containers.GetOrAdd(id ?? "",
-                    k => new ItemContainer(_logger)));
+                    k => new ItemContainer(id, _logger)));
             }
 
             private readonly ConcurrentDictionary<string, ItemContainer> _containers =
@@ -73,12 +73,17 @@ namespace Microsoft.Azure.IIoT.Storage.Default {
         /// </summary>
         private class ItemContainer : IDocuments, IItemContainer {
 
+            /// <inheritdoc/>
+            public string Name { get; }
+
             /// <summary>
             /// Create service
             /// </summary>
+            /// <param name="name"></param>
             /// <param name="logger"></param>
-            public ItemContainer(ILogger logger) {
+            public ItemContainer(string name, ILogger logger) {
                 _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+                Name = name ?? throw new ArgumentNullException(nameof(name));
             }
 
             /// <inheritdoc/>
@@ -311,7 +316,7 @@ namespace Microsoft.Azure.IIoT.Storage.Default {
             private class MemoryFeed<T> : IResultFeed<T> {
 
                 /// <inheritdoc/>
-                public string ContinuationToken => 
+                public string ContinuationToken =>
                     throw new NotImplementedException(); // TODO
 
                 /// <summary>
