@@ -17,7 +17,8 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// </summary>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<uint> AllocateAsync(CancellationToken ct = default);
+        Task<uint> AllocateAsync(
+            CancellationToken ct = default(CancellationToken));
 
         /// <summary>
         /// Free index
@@ -25,6 +26,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="index"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task FreeAsync(uint index, CancellationToken ct = default);
+        Task FreeAsync(uint index, 
+            CancellationToken ct = default(CancellationToken));
     }
 }

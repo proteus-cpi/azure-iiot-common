@@ -18,8 +18,8 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="key"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<string> GetKeyValueAsync(
-            string key, CancellationToken ct = default);
+        Task<string> GetKeyValueAsync(string key, 
+            CancellationToken ct = default(CancellationToken));
 
         /// <summary>
         /// Write the value to the key
@@ -28,7 +28,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="value"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<string> SetKeyValueAsync(
-            string key, string value, CancellationToken ct = default);
+        Task SetKeyValueAsync(string key, string value, 
+            CancellationToken ct = default(CancellationToken));
     }
 }
