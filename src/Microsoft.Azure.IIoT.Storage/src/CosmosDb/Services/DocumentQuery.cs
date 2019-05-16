@@ -19,7 +19,7 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
     /// <summary>
     /// Document query client
     /// </summary>
-    sealed class DocumentQuery : ISqlClient {
+    internal sealed class DocumentQuery : ISqlClient {
 
         /// <summary>
         /// Create document query client
@@ -58,7 +58,7 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
                     MaxDegreeOfParallelism = 8,
                     MaxItemCount = pageSize ?? -1,
                     PartitionKey = pk,
-                    
+
                     EnableCrossPartitionQuery = pk == null
                 });
             return new DocumentInfoFeed<T>(query.AsDocumentQuery(), _logger);
@@ -119,10 +119,10 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
         public void Dispose() {
         }
 
-        private DocumentClient _client;
+        private readonly DocumentClient _client;
         private readonly string _databaseId;
         private readonly string _id;
         private readonly bool _partitioned;
-        private ILogger _logger;
+        private readonly ILogger _logger;
     }
 }

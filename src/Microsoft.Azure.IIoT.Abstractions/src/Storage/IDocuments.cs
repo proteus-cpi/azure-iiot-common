@@ -24,7 +24,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="partitionKey"></param>
         /// <returns></returns>
         Task<IDocumentInfo<T>> AddAsync<T>(T newItem,
-            CancellationToken ct = default(CancellationToken),
+            CancellationToken ct = default,
             string id = null, string partitionKey = null);
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="partitionKey"></param>
         /// <returns></returns>
         Task<IDocumentInfo<T>> GetAsync<T>(string id,
-            CancellationToken ct = default(CancellationToken),
+            CancellationToken ct = default,
             string partitionKey = null);
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<IDocumentInfo<T>> ReplaceAsync<T>(IDocumentInfo<T> existing,
-            T value, CancellationToken ct = default(CancellationToken));
+            T value, CancellationToken ct = default);
 
         /// <summary>
         /// Adds or updates an item.
@@ -59,7 +59,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="etag"></param>
         /// <returns></returns>
         Task<IDocumentInfo<T>> UpsertAsync<T>(T newItem,
-            CancellationToken ct = default(CancellationToken),
+            CancellationToken ct = default,
             string id = null, string partitionKey = null,
             string etag = null);
 
@@ -82,7 +82,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="ct"></param>
         /// <returns></returns>
         Task DeleteAsync<T>(IDocumentInfo<T> item,
-            CancellationToken ct = default(CancellationToken));
+            CancellationToken ct = default);
 
         /// <summary>
         /// Delete an item by id.
@@ -93,7 +93,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="etag"></param>
         /// <returns></returns>
         Task DeleteAsync(string id,
-            CancellationToken ct = default(CancellationToken),
+            CancellationToken ct = default,
             string partitionKey = null, string etag = null);
 
         /// <summary>

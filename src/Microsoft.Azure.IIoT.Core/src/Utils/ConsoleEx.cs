@@ -31,7 +31,7 @@ namespace System {
                 Console.Write("> ");
                 var line = Console.ReadLine();
                 if (line == exit) {
-                    return default(T);
+                    return default;
                 }
                 if (!int.TryParse(line, out var selected)) {
                     Console.WriteLine(line + " is not a valid index!");

@@ -29,7 +29,7 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="ct"></param>
         /// <returns></returns>
         Task<IEnumerable<string>> ListContainersAsync(
-            CancellationToken ct = default(CancellationToken));
+            CancellationToken ct = default);
 
         /// <summary>
         /// Delete (default) collection in database

@@ -142,7 +142,7 @@ namespace System.Collections.Concurrent {
         /// otherwise, false.
         /// </returns>
         public bool TryDequeue(out ValueTuple<T, V> result) {
-            result = default(ValueTuple<T, V>);
+            result = default;
             lock (_syncLock) {
                 if (_minHeap.Count > 0) {
                     result = _minHeap.Remove();
@@ -162,7 +162,7 @@ namespace System.Collections.Concurrent {
         /// <returns> true if an element was returned from the queue
         /// succesfully; otherwise, false. </returns>
         public bool TryPeek(out ValueTuple<T, V> result) {
-            result = default(ValueTuple<T, V>);
+            result = default;
             lock (_syncLock) {
                 if (_minHeap.Count > 0) {
                     result = _minHeap.Peek();

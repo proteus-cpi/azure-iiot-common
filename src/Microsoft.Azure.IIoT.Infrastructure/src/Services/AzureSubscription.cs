@@ -17,7 +17,7 @@ namespace Microsoft.Azure.IIoT.Infrastructure.Services {
     /// <summary>
     /// Read subscription information from user other selector.
     /// </summary>
-    public class AzureSubscription : ISubscriptionInfoProvider  {
+    public class AzureSubscription : ISubscriptionInfoProvider {
 
         /// <summary>
         /// Create subscription service
@@ -25,7 +25,7 @@ namespace Microsoft.Azure.IIoT.Infrastructure.Services {
         /// <param name="creds"></param>
         /// <param name="logger"></param>
         public AzureSubscription(ICredentialProvider creds,
-            ILogger logger) : this (creds, new FixedSelector(), logger) {
+            ILogger logger) : this(creds, new FixedSelector(), logger) {
         }
 
         /// <summary>
@@ -139,9 +139,9 @@ namespace Microsoft.Azure.IIoT.Infrastructure.Services {
             /// <inheritdoc/>
             public Task<string> GetRegionAsync() => _region.Value;
 
-            private Lazy<string> _environment;
-            private Lazy<Task<ISubscription>> _subscription;
-            private Lazy<Task<string>> _region;
+            private readonly Lazy<string> _environment;
+            private readonly Lazy<Task<ISubscription>> _subscription;
+            private readonly Lazy<Task<string>> _region;
         }
 
         private readonly ISubscriptionInfoSelector _selector;

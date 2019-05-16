@@ -4,6 +4,7 @@
 // ------------------------------------------------------------
 
 namespace Microsoft.Azure.IIoT.Storage {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -19,8 +20,8 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="contentType"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task<string> GetKeyValueAsync(string key, string contentType,
-            CancellationToken ct = default(CancellationToken));
+        Task<string> GetKeyValueAsync(string key, string contentType = null,
+            CancellationToken ct = default);
 
         /// <summary>
         /// Write the value to the key
@@ -28,9 +29,20 @@ namespace Microsoft.Azure.IIoT.Storage {
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="contentType"></param>
+        /// <param name="notBefore"></param>
+        /// <param name="notAfter"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task SetKeyValueAsync(string key, string value, string contentType, 
-            CancellationToken ct = default(CancellationToken));
+        Task SetKeyValueAsync(string key, string value, DateTime? notBefore = null, 
+            DateTime? notAfter = null, string contentType = null,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Delete key and value
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task DeleteKeyValueAsync(string key, CancellationToken ct = default);
     }
 }
