@@ -14,14 +14,14 @@ namespace Microsoft.Azure.IIoT.Crypto {
     public interface ICrlStore {
 
         /// <summary>
-        /// Imports a CRL for certificate.
+        /// Updates or adds a CRL for certificate.
         /// </summary>
         /// <param name="certificateName"></param>
         /// <param name="thumbPrint"></param>
         /// <param name="crl"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task ImportCrlAsync(string certificateName, string thumbPrint,
+        Task SetCrlAsync(string certificateName, string thumbPrint,
             X509Crl2 crl, CancellationToken ct = default);
 
         /// <summary>

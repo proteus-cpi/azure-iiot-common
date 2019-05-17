@@ -20,7 +20,7 @@ namespace Microsoft.Azure.IIoT.Crypto.Default {
     /// <summary>
     /// Default certificate revoker
     /// </summary>
-    public class CertificateRevoker : ICrlFactory {
+    public class CertificateRevoker : ICertificateRevoker {
 
         /// <summary>
         /// Create factory
@@ -33,7 +33,8 @@ namespace Microsoft.Azure.IIoT.Crypto.Default {
         }
 
         /// <inheritdoc/>
-        public X509Crl2 CreateCrl(X509CertificateKeyIdPair issuerCertificate) {
+        public X509Crl2 CreateCrl(X509CertificateKeyIdPair issuerCertificate,
+            DateTime thisUpdate, DateTime nextUpdate) {
             if (issuerCertificate == null) {
                 throw new ArgumentNullException(nameof(issuerCertificate));
             }
@@ -57,8 +58,14 @@ namespace Microsoft.Azure.IIoT.Crypto.Default {
 
                 var crlGen = new X509V2CrlGenerator();
                 crlGen.SetIssuerDN(bcCertCA.IssuerDN);
-                crlGen.SetThisUpdate(DateTime.UtcNow);
-                crlGen.SetNextUpdate(DateTime.UtcNow.AddMonths(12));
+                if (thisUpdate == DateTime.MinValue) {
+                    thisUpdate = DateTime.UtcNow;
+                }
+                crlGen.SetThisUpdate(thisUpdate);
+                if (nextUpdate <= thisUpdate) {
+                    nextUpdate = bcCertCA.NotAfter;
+                }
+                crlGen.SetNextUpdate(nextUpdate);
 
                 var now = DateTime.UtcNow;
                 crlGen.AddCrlEntry(BigInteger.One, now, CrlReason.Unspecified);

@@ -12,15 +12,15 @@ namespace Microsoft.Azure.IIoT.Crypto {
     /// <summary>
     /// Revoke certificate and create crl
     /// </summary>
-    public interface ICrlFactory { 
+    public interface ICertificateRevoker { 
 
         /// <summary>
         /// Revoke certificates.
         /// The CRL number is increased by one and the new CRL is returned.
         /// </summary>
-        /// <param name="issuerCertificate"></param>
-        /// <param name="issuerCrls"></param>
-        /// <param name="revokedCertificates"></param>
+        /// <param name="issuerCertificate">Issuer</param>
+        /// <param name="issuerCrls">Existing crls</param>
+        /// <param name="revokedCertificates">Certificates to revoke</param>
         /// <param name="thisUpdate"></param>
         /// <param name="nextUpdate"></param>
         /// <param name="hashSize"></param>
@@ -32,8 +32,11 @@ namespace Microsoft.Azure.IIoT.Crypto {
         /// <summary>
         /// Create empty crl signed by the issuer certificate
         /// </summary>
-        /// <param name="issuerCertificate"></param>
+        /// <param name="issuerCertificate">Issuer</param>
+        /// <param name="thisUpdate"></param>
+        /// <param name="nextUpdate"></param>
         /// <returns></returns>
-        X509Crl2 CreateCrl(X509CertificateKeyIdPair issuerCertificate);
+        X509Crl2 CreateCrl(X509CertificateKeyIdPair issuerCertificate,
+            DateTime thisUpdate, DateTime nextUpdate);
     }
 }

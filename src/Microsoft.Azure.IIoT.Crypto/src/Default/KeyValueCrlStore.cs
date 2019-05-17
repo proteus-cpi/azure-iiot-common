@@ -27,7 +27,7 @@ namespace Microsoft.Azure.IIoT.Crypto.Default {
         }
 
         /// <inheritdoc/>
-        public async Task ImportCrlAsync(string certificateName, string thumbPrint,
+        public async Task SetCrlAsync(string certificateName, string thumbPrint,
             X509Crl2 crl, CancellationToken ct) {
             var crlId = GetCrlId(certificateName, thumbPrint);
             await _kvStore.SetKeyValueAsync(crlId, Convert.ToBase64String(crl.RawData), 
