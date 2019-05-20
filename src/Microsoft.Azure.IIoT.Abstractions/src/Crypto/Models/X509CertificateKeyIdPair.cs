@@ -17,7 +17,7 @@ namespace Microsoft.Azure.IIoT.Crypto.Models {
         public X509Certificate2 Certificate { get; set; }
 
         /// <summary>
-        /// Key identifier to look up the private key
+        /// Key identifier to look up a private key
         /// </summary>
         public string KeyIdentifier { get; set; }
     }

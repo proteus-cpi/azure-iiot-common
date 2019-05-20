@@ -37,6 +37,15 @@ namespace Microsoft.Azure.IIoT.Crypto {
             CancellationToken ct = default);
 
         /// <summary>
+        /// Get encoding of the specified key
+        /// </summary>
+        /// <param name="keyId"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task<PrivateKeyEncoding> GetEncodingAsync(string keyId, 
+            CancellationToken ct = default);
+
+        /// <summary>
         /// Accept Private Key with key Id
         /// </summary>
         /// <param name="keyId"></param>

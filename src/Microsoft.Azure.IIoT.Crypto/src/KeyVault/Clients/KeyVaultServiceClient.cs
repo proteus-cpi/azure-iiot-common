@@ -183,44 +183,6 @@ namespace Microsoft.Azure.IIoT.Crypto.KeyVault.Clients {
             return result;
         }
 
-#if UNUSED
-        /// <summary>
-        /// Load the signing CA certificate for signing operations.
-        /// </summary>
-        /// <param name="signingCertificateKey"></param>
-        /// <param name="publicCert"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        // Task<X509Certificate2> LoadSigningCertificateAsync(
-        //     string signingCertificateKey, X509Certificate2 publicCert,
-        //     CancellationToken ct = default);
-        public async Task<X509Certificate2> LoadSigningCertificateAsync(
-            string signingCertificateKey, X509Certificate2 publicCert, CancellationToken ct) {
-            if (publicCert == null) {
-                throw new ArgumentNullException(nameof(publicCert));
-            }
-#if LOADPRIVATEKEY
-            var secret = await _keyVaultClient.GetSecretAsync(signingCertificateKey, ct);
-            if (secret.ContentType == CertificateContentType.Pfx) {
-                var certBlob = Convert.FromBase64String(secret.Value);
-                return CertificateFactory.CreateCertificateFromPKCS12(certBlob, string.Empty);
-            }
-            else if (secret.ContentType == CertificateContentType.Pem) {
-                var privateKey = Encoding.UTF8.GetBytes(secret.Value.ToCharArray());
-                return CertificateFactory.CreateCertificateWithPEMPrivateKey(publicCert, privateKey, string.Empty);
-            }
-            throw new NotImplementedException("Unknown content type: " + secret.ContentType);
-#else
-            ct.ThrowIfCancellationRequested();
-            _logger.Error("Error in LoadSigningCertificateAsync " + signingCertificateKey + "." +
-                "Loading the private key is not permitted.", signingCertificateKey);
-            await Task.FromException(new NotSupportedException(
-                "Loading the private key from key Vault is not permitted."));
-            return null;
-#endif
-        }
-#endif
-
         /// <inheritdoc/>
         public async Task<byte[]> SignDigestAsync(string signingKey, byte[] digest,
             HashAlgorithmName hashAlgorithm, RSASignaturePadding padding, CancellationToken ct) {
