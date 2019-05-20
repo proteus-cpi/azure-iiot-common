@@ -442,6 +442,18 @@ namespace Microsoft.Azure.IIoT.Crypto.KeyVault.Clients {
         }
 
         /// <inheritdoc/>
+        public async Task<PrivateKeyEncoding> GetEncodingAsync(string keyId,
+            CancellationToken ct) {
+            if (string.IsNullOrEmpty(keyId)) {
+                throw new ArgumentNullException(nameof(keyId));
+            }
+            var secret = await _keyVaultClient.GetSecretAsync(
+                _vaultBaseUrl, keyId, ct);
+            return ContentTypeToPrivateKeyEncoding(secret.ContentType);
+        }
+
+
+        /// <inheritdoc/>
         public async Task DisableKeyAsync(string keyId, CancellationToken ct) {
             if (string.IsNullOrEmpty(keyId)) {
                 throw new ArgumentNullException(nameof(keyId));
@@ -846,7 +858,7 @@ namespace Microsoft.Azure.IIoT.Crypto.KeyVault.Clients {
         }
 
         /// <summary>
-        /// Convert format to content type
+        /// Convert encoding type to content type
         /// </summary>
         /// <param name="privateKeyEncoding"></param>
         /// <returns></returns>
@@ -862,6 +874,21 @@ namespace Microsoft.Azure.IIoT.Crypto.KeyVault.Clients {
             }
         }
 
+        /// <summary>
+        /// Convert content type to encoding type
+        /// </summary>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        private PrivateKeyEncoding ContentTypeToPrivateKeyEncoding(string contentType) {
+            switch (contentType) {
+                case CertificateContentType.Pfx:
+                    return PrivateKeyEncoding.PFX;
+                case CertificateContentType.Pem :
+                    return PrivateKeyEncoding.PEM;
+                default:
+                    throw new Exception("Unknown Private Key encoding.");
+            }
+        }
 
         private const int kSerialNumberLength = 20;
         private const int kDefaultKeySize = 2048;
