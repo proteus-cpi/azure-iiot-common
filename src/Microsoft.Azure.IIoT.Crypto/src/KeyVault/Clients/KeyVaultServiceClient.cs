@@ -879,7 +879,8 @@ namespace Microsoft.Azure.IIoT.Crypto.KeyVault.Clients {
         /// </summary>
         /// <param name="contentType"></param>
         /// <returns></returns>
-        private PrivateKeyEncoding ContentTypeToPrivateKeyEncoding(string contentType) {
+        private PrivateKeyEncoding ContentTypeToPrivateKeyEncoding(
+            string contentType) {
             switch (contentType) {
                 case CertificateContentType.Pfx:
                     return PrivateKeyEncoding.PFX;
