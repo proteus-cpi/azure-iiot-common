@@ -127,7 +127,6 @@ namespace Microsoft.Azure.IIoT.Http.Default {
                 _expired(this);
             }
 
-            private readonly SemaphoreSlim _lock = new SemaphoreSlim(1);
             private readonly Timer _timer;
             private readonly Action<ActiveHandlerEntry> _expired;
         }

@@ -12,7 +12,6 @@ namespace Microsoft.Azure.IIoT.Crypto.Default {
     using Org.BouncyCastle.Security;
     using Org.BouncyCastle.X509;
     using Org.BouncyCastle.X509.Extension;
-    using Serilog;
     using System;
     using System.Collections.Generic;
     using System.Security.Cryptography.X509Certificates;
@@ -26,10 +25,8 @@ namespace Microsoft.Azure.IIoT.Crypto.Default {
         /// Create factory
         /// </summary>
         /// <param name="signer"></param>
-        /// <param name="logger"></param>
-        public CertificateRevoker(IDigestSigner signer, ILogger logger) {
+        public CertificateRevoker(IDigestSigner signer) {
             _signer = signer;
-            _logger = logger;
         }
 
         /// <inheritdoc/>
@@ -155,6 +152,5 @@ namespace Microsoft.Azure.IIoT.Crypto.Default {
         }
 
         private readonly IDigestSigner _signer;
-        private readonly ILogger _logger;
     }
 }

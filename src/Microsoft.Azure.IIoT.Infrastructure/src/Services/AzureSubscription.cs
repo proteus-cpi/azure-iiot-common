@@ -23,9 +23,8 @@ namespace Microsoft.Azure.IIoT.Infrastructure.Services {
         /// Create subscription service
         /// </summary>
         /// <param name="creds"></param>
-        /// <param name="logger"></param>
-        public AzureSubscription(ICredentialProvider creds,
-            ILogger logger) : this(creds, new FixedSelector(), logger) {
+        public AzureSubscription(ICredentialProvider creds) : 
+            this(creds, new FixedSelector()) {
         }
 
         /// <summary>
@@ -33,12 +32,10 @@ namespace Microsoft.Azure.IIoT.Infrastructure.Services {
         /// </summary>
         /// <param name="creds"></param>
         /// <param name="selector"></param>
-        /// <param name="logger"></param>
         public AzureSubscription(ICredentialProvider creds,
-            ISubscriptionInfoSelector selector, ILogger logger) {
+            ISubscriptionInfoSelector selector) {
             _selector = selector ?? throw new ArgumentNullException(nameof(selector));
             _creds = creds ?? throw new ArgumentNullException(nameof(creds));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <inheritdoc/>
@@ -146,6 +143,5 @@ namespace Microsoft.Azure.IIoT.Infrastructure.Services {
 
         private readonly ISubscriptionInfoSelector _selector;
         private readonly ICredentialProvider _creds;
-        private readonly ILogger _logger;
     }
 }

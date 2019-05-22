@@ -99,6 +99,7 @@ namespace Microsoft.Azure.IIoT.Module.Default {
                 }
                 payload = received.ToArray().Unzip();
                 if (status != 200) {
+                    _logger.Verbose("Received error {status} with: {payload}", status, payload);
                     throw new MethodCallStatusException(payload, status);
                 }
                 return payload;

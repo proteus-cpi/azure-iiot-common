@@ -74,7 +74,6 @@ namespace Microsoft.Azure.IIoT.Storage.CosmosDb.Services {
             return _complete.Result;
         }
 
-        private const int _retries = 100;
         private const int _maxArgs = 5000;
 
         /// <summary>

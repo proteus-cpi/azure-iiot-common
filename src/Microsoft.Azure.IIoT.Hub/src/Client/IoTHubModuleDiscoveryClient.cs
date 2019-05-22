@@ -49,8 +49,9 @@ namespace Microsoft.Azure.IIoT.Hub.Client {
                 }
                 return result;
             }
-            catch (ResourceNotFoundException) {
+            catch (ResourceNotFoundException ex) {
                 // Fall back to find all modules under the device using query
+                _logger.Error(ex, "Agent not found, query modules under device");
                 var modules = await _twin.QueryDeviceTwinsAsync(
                      $"SELECT * FROM devices.modules WHERE deviceId = '{deviceId}'");
                 return modules.Select(ToDiscoveredModuleModel).ToList();
