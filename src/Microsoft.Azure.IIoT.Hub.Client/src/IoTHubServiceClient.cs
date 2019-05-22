@@ -50,43 +50,48 @@ namespace Microsoft.Azure.IIoT.Hub.Client {
         }
 
         /// <inheritdoc/>
-        public async Task<DeviceTwinModel> CreateOrUpdateAsync(DeviceTwinModel twin,
+        public async Task<DeviceTwinModel> CreateAsync(DeviceTwinModel twin,
             bool forceUpdate) {
 
-            if (string.IsNullOrEmpty(twin.Etag)) {
+            // First try create device
+            try {
+                var device = await _registry.AddDeviceAsync(twin.ToDevice());
+            }
+            catch (DeviceAlreadyExistsException)
+                when (!string.IsNullOrEmpty(twin.ModuleId) || forceUpdate) {
+                // continue
+            }
+            catch (Exception e) {
+                _logger.Debug(e, "Create device failed in CreateOrUpdate");
+                throw e.Rethrow();
+            }
 
-                // First try create device
+            // Then update twin assuming it now exists. If fails, retry...
+            var etag = string.IsNullOrEmpty(twin.Etag) || forceUpdate ? "*" : twin.Etag;
+            if (!string.IsNullOrEmpty(twin.ModuleId)) {
+                // Try create module
                 try {
-                    var device = await _registry.AddDeviceAsync(twin.ToDevice());
+                    var module = await _registry.AddModuleAsync(twin.ToModule());
                 }
-                catch (DeviceAlreadyExistsException) {
+                catch (DeviceAlreadyExistsException) when (forceUpdate) {
                     // Expected for update
                 }
                 catch (Exception e) {
-                    _logger.Debug(e, "Create device failed in CreateOrUpdate");
+                    _logger.Debug(e, "Create module failed in CreateOrUpdate");
+                    throw e.Rethrow();
                 }
             }
+            return await PatchAsync(twin, true); // Force update of twin
+        }
 
+        /// <inheritdoc/>
+        public async Task<DeviceTwinModel> PatchAsync(DeviceTwinModel twin,
+            bool force) {
             try {
-
                 Twin update;
                 // Then update twin assuming it now exists. If fails, retry...
-                var etag = string.IsNullOrEmpty(twin.Etag) || forceUpdate ? "*" : twin.Etag;
+                var etag = string.IsNullOrEmpty(twin.Etag) || force ? "*" : twin.Etag;
                 if (!string.IsNullOrEmpty(twin.ModuleId)) {
-
-                    if (string.IsNullOrEmpty(twin.Etag)) {
-                        // Try create module
-                        try {
-                            var module = await _registry.AddModuleAsync(twin.ToModule());
-                        }
-                        catch (DeviceAlreadyExistsException) {
-                            // Expected for update
-                        }
-                        catch (Exception e) {
-                            _logger.Debug(e, "Create module failed in CreateOrUpdate");
-                        }
-                    }
-
                     update = await _registry.UpdateTwinAsync(twin.Id, twin.ModuleId,
                         twin.ToTwin(true), etag);
                 }
@@ -99,7 +104,7 @@ namespace Microsoft.Azure.IIoT.Hub.Client {
             }
             catch (Exception e) {
                 _logger.Debug(e, "Create or update failed ");
-                throw;
+                throw e.Rethrow();
             }
         }
 

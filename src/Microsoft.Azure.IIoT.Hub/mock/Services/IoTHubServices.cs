@@ -118,8 +118,7 @@ namespace Microsoft.Azure.IIoT.Hub.Mock {
         }
 
         /// <inheritdoc/>
-        public Task<DeviceTwinModel> CreateOrUpdateAsync(DeviceTwinModel twin,
-            bool forceUpdate) {
+        public Task<DeviceTwinModel> CreateAsync(DeviceTwinModel twin, bool force) {
 
             var model = GetModel(twin.Id, twin.ModuleId);
             if (model == null) {
@@ -128,9 +127,21 @@ namespace Microsoft.Azure.IIoT.Hub.Mock {
                     new DeviceModel { Id = twin.Id, ModuleId = twin.ModuleId }, twin);
                 _devices.Add(model);
             }
-            else {
-                model.UpdateTwin(twin);
+            else if (!force) {
+                throw new ConflictingResourceException("Twin conflict");
             }
+            model.UpdateTwin(twin);
+            return Task.FromResult(model.Twin);
+        }
+
+
+        /// <inheritdoc/>
+        public Task<DeviceTwinModel> PatchAsync(DeviceTwinModel twin, bool force) {
+            var model = GetModel(twin.Id, twin.ModuleId);
+            if (model == null) {
+                throw new ResourceNotFoundException("Twin not found");
+            }
+            model.UpdateTwin(twin);
             return Task.FromResult(model.Twin);
         }
 

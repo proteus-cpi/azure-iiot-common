@@ -41,8 +41,57 @@ namespace Microsoft.Azure.IIoT.Hub.Client {
         }
 
         /// <inheritdoc/>
-        public Task<DeviceTwinModel> CreateOrUpdateAsync(DeviceTwinModel twin,
-            bool forceUpdate) {
+        public Task<DeviceTwinModel> CreateAsync(DeviceTwinModel twin, bool force) {
+            if (twin == null) {
+                throw new ArgumentNullException(nameof(twin));
+            }
+            if (string.IsNullOrEmpty(twin.Id)) {
+                throw new ArgumentNullException(nameof(twin.Id));
+            }
+            // Retry transient errors
+            return Retry.WithExponentialBackoff(_logger, async () => {
+                // First try create device
+                try {
+                    var device = NewRequest($"/devices/{twin.Id}");
+                    device.SetContent(new {
+                        deviceId = twin.Id,
+                        capabilities = twin.Capabilities
+                    });
+                    var response = await _httpClient.PutAsync(device);
+                    response.Validate();
+                }
+                catch (ConflictingResourceException) 
+                    when (!string.IsNullOrEmpty(twin.ModuleId) || force) {
+                    // Continue onward
+                }
+                catch (Exception e) {
+                    _logger.Debug(e, "Create device failed in CreateOrUpdate");
+                }
+                if (!string.IsNullOrEmpty(twin.ModuleId)) {
+                    // Try create module
+                    try {
+                        var module = NewRequest(
+                            $"/devices/{twin.Id}/modules/{twin.ModuleId}");
+                        module.SetContent(new {
+                            deviceId = twin.Id,
+                            moduleId = twin.ModuleId
+                        });
+                        var response = await _httpClient.PutAsync(module);
+                        response.Validate();
+                    }
+                    catch (ConflictingResourceException)
+                        when (force) {
+                    }
+                    catch (Exception e) {
+                        _logger.Debug(e, "Create module failed in CreateOrUpdate");
+                    }
+                }
+                return await PatchAsync(twin, true);  // Force update of twin
+            });
+        }
+
+        /// <inheritdoc/>
+        public Task<DeviceTwinModel> PatchAsync(DeviceTwinModel twin, bool force) {
             if (twin == null) {
                 throw new ArgumentNullException(nameof(twin));
             }
@@ -51,51 +100,12 @@ namespace Microsoft.Azure.IIoT.Hub.Client {
             }
             return Retry.WithExponentialBackoff(_logger, async () => {
 
-                if (string.IsNullOrEmpty(twin.Etag)) {
-                    // First try create
-                    try {
-                        var device = NewRequest($"/devices/{twin.Id}");
-                        device.SetContent(new {
-                            deviceId = twin.Id,
-                            capabilities = twin.Capabilities
-                        });
-                        var response = await _httpClient.PutAsync(device);
-                        response.Validate();
-                    }
-                    catch (ConflictingResourceException) {
-                        // Expected for update
-                    }
-                    catch (Exception e) {
-                        _logger.Debug(e, "Create device failed in CreateOrUpdate");
-                    }
-                }
-
                 // Then update twin assuming it now exists. If fails, retry...
                 var patch = NewRequest(
                     $"/twins/{ToResourceId(twin.Id, twin.ModuleId)}");
                 patch.Headers.Add("If-Match",
-                     $"\"{(string.IsNullOrEmpty(twin.Etag) || forceUpdate ? "*" : twin.Etag)}\"");
+                     $"\"{(string.IsNullOrEmpty(twin.Etag) || force ? "*" : twin.Etag)}\"");
                 if (!string.IsNullOrEmpty(twin.ModuleId)) {
-
-                    if (string.IsNullOrEmpty(twin.Etag)) {
-                        // Try create module
-                        try {
-                            var module = NewRequest(
-                                $"/devices/{twin.Id}/modules/{twin.ModuleId}");
-                            module.SetContent(new {
-                                deviceId = twin.Id,
-                                moduleId = twin.ModuleId
-                            });
-                            var response = await _httpClient.PutAsync(module);
-                            response.Validate();
-                        }
-                        catch (ConflictingResourceException) {
-                            // Expected for update
-                        }
-                        catch (Exception e) {
-                            _logger.Debug(e, "Create module failed in CreateOrUpdate");
-                        }
-                    }
 
                     // Patch module
                     patch.SetContent(new {

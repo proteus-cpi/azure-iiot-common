@@ -21,7 +21,7 @@ namespace Microsoft.Azure.IIoT.Services.Auth.Clients {
         /// <param name="cache">Cache</param>
         /// <param name="dp">protector</param>
         public DistributedTokenCache(IDistributedCache cache,
-            IDataProtectionProvider dp, ILogger logger) {
+            IDataProtectionProvider dp) {
             _dp = dp ?? throw new ArgumentNullException(nameof(dp));
             _cache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
